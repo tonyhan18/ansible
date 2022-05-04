@@ -1,0 +1,13 @@
+---
+- name: using sed
+  hosts: localhost
+  become: yes
+  gather_facts: no
+
+  tasks: 
+    - name: change selinux
+      become: yes
+      replace:
+        path: /etc/selinux/config
+        regexp: 'SELINUX=enforcing'
+        replace: 'SELINUX=disabled'

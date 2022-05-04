@@ -1,0 +1,30 @@
+---
+- name: nfs-server
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: DIR creation
+      file:
+        path: /home/vagrant/shared
+        state: directory
+        mode: 0777
+    - name: installation nfs server
+      become: yes
+      yum:
+        name: nfs-utils
+        state: present
+    - name: configuring /etc/exports
+      become: yes
+      lineinfile:
+        path: /etc/exports
+        line: /home/vagrant/shared 172.16.1.0/24(rw,sync)
+    - name: start nfs server
+      become: yes
+      service:
+        name: nfs-server
+        state: restarted
+
+#- name: nfs-client
+#  hosts: centos
+#  gather_facts: no
+#  tasks:

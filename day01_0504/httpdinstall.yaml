@@ -1,0 +1,47 @@
+---
+- name: httpd installation
+  hosts: all
+  gather_facts: no
+
+  tasks:
+    - name: SELINUX disabled
+      become: yes
+      replace:
+        path: /etc/selinux/config
+        regexp: 'SELINUX=enforcing'
+        replace: 'SELINUX=disabled'
+    - name: DIRECTORY CREATION
+      file:
+        path: /home/vagrant/testdir
+        state: directory
+
+    - name: libselinux-python install
+      become: yes
+      yum:
+        name: libselinux-python
+        state: present
+
+    - name: httpd install
+      become: yes
+      yum:
+        name: httpd
+        state: present
+
+    - name: index.html creation
+      become: yes
+      get_url: url=https://www.nginx.com dest=/var/www/html/index.htm
+
+    - name: start httpd
+      become: yes
+      service:
+        name: httpd
+        state: started
+        enabled: true
+
+    - name: stop firewalld
+      become: yes
+      service:
+        name: firewalld
+        state: stopped
+        enabled: false
+

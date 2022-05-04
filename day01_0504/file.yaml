@@ -1,0 +1,18 @@
+---
+- name: using sed
+  hosts: localhost
+  become: yes
+  gather_facts: no
+
+  tasks: 
+    - name: line in file
+      blockinfile:
+        path: /etc/ansible/hosts
+        block: |
+
+          [centos]
+          172.16.1.11
+          172.16.1.12
+          172.16.1.13
+
+
