@@ -1,0 +1,30 @@
+---
+- name: httpd installation
+  hosts: all 
+  become: true
+  gather_facts: no
+
+  tasks: 
+    - name: DIRECTORY CREATION
+      file:
+        path: /home/vagrant/testdir
+        state: directory
+    - name: libselinux-python install
+      become: yes
+      yum:
+        name: libselinux-python
+        state: present
+    - name: httpd install
+      yum:
+        name: httpd
+        state: present
+    - name: start httpd
+      services:
+        name: httpd
+        state: started
+        enabled: true
+    - name: stop firewalld
+      service:
+        name: firewalld
+        state: stopped
+        enabled: false

@@ -1,0 +1,51 @@
+# -*- mode: ruby -*-
+# # vi: set ft=ruby :
+
+###### ANSIBLE NODE 1~3 ######
+Vagrant.configure("2") do |config|
+  config.vm.define "ansible-node1" do |cfg|
+    cfg.vm.box = "centos/7"
+    cfg.vm.host_name = "ansible-node1"
+    cfg.vm.network "private_network", ip: "172.16.1.11"
+    cfg.vm.network "forwarded_port", guest: 22, host: 60011, auto_correct: true, id: "ssh"
+    cfg.vm.provision "file", source: "auth.sh", destination: "auth.sh"
+    cfg.vm.provision "shell", inline: "/bin/bash auth.sh",privileged: true
+    end
+
+  config.vm.define "ansible-node2" do |cfg|
+    cfg.vm.box = "centos/7"
+    cfg.vm.host_name = "ansible-node2"
+    cfg.vm.network "private_network", ip: "172.16.1.12"
+    cfg.vm.network "forwarded_port", guest: 22, host: 60012, auto_correct: true, id: "ssh"
+    cfg.vm.provision "file", source: "auth.sh", destination: "auth.sh"
+    cfg.vm.provision "shell", inline: "/bin/bash auth.sh",privileged: true
+    end
+
+  config.vm.define "ansible-node3" do |cfg|
+    cfg.vm.box = "centos/7"
+    cfg.vm.host_name = "ansible-node3"
+    cfg.vm.network "private_network", ip: "172.16.1.13"
+    cfg.vm.network "forwarded_port", guest: 22, host: 60013, auto_correct: true, id: "ssh"
+    cfg.vm.provision "file", source: "auth.sh", destination: "auth.sh"
+    cfg.vm.provision "shell", inline: "/bin/bash auth.sh",privileged: true
+    end
+end
+
+###### ANSIBLE SERVER CONFIG #######
+Vagrant.configure("2") do |config|
+  config.vm.define "ansible-server" do |cfg|
+    cfg.vm.box = "centos/7"
+    cfg.vm.host_name = "ansible-server"
+    cfg.vm.network "private_network", ip: "172.16.1.10"
+    cfg.vm.network "forwarded_port", guest: 22, host: 60010, auto_correct: true, id: 'ssh'
+    cfg.vm.provision "shell", inline: "yum -y install epel-release"
+    cfg.vm.provision "shell", inline: "yum -y install ansible"
+    cfg.vm.provision "file", source: "test.yml", destination: "test.yml"
+    cfg.vm.provision "shell", inline: "ansible-playbook test.yml"
+    cfg.vm.provider :libvirt do |resource|
+      resource.memory = 2048
+      resource.cpus = 2
+    end
+  end
+end
+
