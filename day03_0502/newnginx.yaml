@@ -1,0 +1,35 @@
+---
+- name: nginx install
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: centos > epel-release install
+      action: "{{ ansible_pkg_mgr }} name=epel-release state=present"
+      when: ansible_distribution == 'CentOS'
+
+    - name: centos > nginx
+      action: "{{ ansible_pkg_mgr }} name=nginx state=present"
+      when: ansible_distribution == 'CentOS'
+
+    - name: ubuntu > nginx
+      action: "{{ ansible_pkg_mgr }} name=nginx state=present"
+      when: ansible_distribution == 'Ubuntu'
+
+    - name: centos > copy
+      copy:
+        src: index.html
+        dest: /usr/share/nginx/html
+      when: ansible_distribution == 'CentOS'
+
+    - name: ubuntu > copy
+      copy:
+        src: index.html
+        dest: /var/www/html
+      when: ansible_distribution == 'Ubuntu'
+
+    - name: ubuntu | centos nginx  > start
+      service:
+        name: nginx
+        state: restarted
+
