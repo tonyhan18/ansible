@@ -1,0 +1,26 @@
+---
+- name: hosts define
+  hosts: localhost
+  gather_facts: no
+
+  tasks:
+    - name: write /etc/ansible/hosts file
+      blockinfile:
+        path: /etc/ansible/hosts
+        block: |
+          [centos]
+          centos1 ansible_host=5.5.5.11
+          centos2 ansible_host=5.5.5.12
+
+          [ubuntu]
+          ubuntu3 ansible_host=5.5.5.13
+          ubuntu4 ansible_host=5.5.5.14
+
+          [seoul]
+          centos1
+          ubuntu3
+
+          [busan]
+          centos2
+          ubuntu4
+

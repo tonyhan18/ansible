@@ -1,0 +1,75 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+### ansible node || centos1
+  config.vm.define "centos1" do |cfg|
+    cfg.vm.box = "generic/centos7"
+    cfg.vm.host_name = "centos1"
+    cfg.vm.network "private_network", ip: "5.5.5.11"
+    cfg.vm.network "forwarded_port", guest: 22, host: 60011, id: "ssh"
+    cfg.vm.provider :libvirt do |rsc|
+      rsc.memory = 1024
+      rsc.cpus = 1
+    end
+    cfg.vm.provision "file", source: "serverkey.txt", destination: "serverkey.txt"
+    cfg.vm.provision "shell", inline: "cat serverkey.txt >> /home/vagrant/.ssh/authorized_keys"
+  end
+### ansible node || centos2
+  config.vm.define "centos2" do |cfg|
+    cfg.vm.box = "generic/centos7"
+    cfg.vm.host_name = "centos2"
+    cfg.vm.network "private_network", ip: "5.5.5.12"
+    cfg.vm.network "forwarded_port", guest: 22, host: 60012, id: "ssh"
+    cfg.vm.provider :libvirt do |rsc|
+      rsc.memory = 1024
+      rsc.cpus = 1
+    end
+    cfg.vm.provision "file", source: "serverkey.txt", destination: "serverkey.txt"
+    cfg.vm.provision "shell", inline: "cat serverkey.txt >> /home/vagrant/.ssh/authorized_keys"
+  end
+### ansible node || ubuntu3
+  config.vm.define "ubuntu3" do |cfg|
+    cfg.vm.box = "generic/ubuntu1804"
+    cfg.vm.host_name = "ubuntu3"
+    cfg.vm.network "private_network", ip: "5.5.5.13"
+    cfg.vm.network "forwarded_port", guest: 22, host: 60013, id: "ssh"
+    cfg.vm.provider :libvirt do |rsc|
+      rsc.memory = 1024
+      rsc.cpus = 1
+    end
+    cfg.vm.provision "file", source: "serverkey.txt", destination: "serverkey.txt"
+    cfg.vm.provision "shell", inline: "cat serverkey.txt >> /home/vagrant/.ssh/authorized_keys"
+    cfg.vm.provision "shell", inline: "echo 'PasswordAuthentication no' >> /etc/ssh/sshd_config", privileged: true
+    cfg.vm.provision "shell", inline: "systemctl restart sshd"
+  end
+### ansible node || ubuntu4
+  config.vm.define "ubuntu4" do |cfg|
+    cfg.vm.box = "generic/ubuntu1804"
+    cfg.vm.host_name = "ubuntu4"
+    cfg.vm.network "private_network", ip: "5.5.5.14"
+    cfg.vm.network "forwarded_port", guest: 22, host: 60014, id: "ssh"
+    cfg.vm.provider :libvirt do |rsc|
+      rsc.memory = 1024
+      rsc.cpus = 1
+    end
+    cfg.vm.provision "file", source: "serverkey.txt", destination: "serverkey.txt"
+    cfg.vm.provision "shell", inline: "cat serverkey.txt >> /home/vagrant/.ssh/authorized_keys"
+    cfg.vm.provision "shell", inline: "echo 'PasswordAuthentication no' >> /etc/ssh/sshd_config", privileged: true
+    cfg.vm.provision "shell", inline: "systemctl restart sshd"
+  end
+### ansible server || CentOS
+  config.vm.define "server" do |cfg|
+    cfg.vm.box = "generic/centos7"
+    cfg.vm.host_name = "server"
+    cfg.vm.network "private_network", ip: "5.5.5.10"
+    cfg.vm.network "forwarded_port", guest: 22, host: 60010, id: "ssh"
+    cfg.vm.provider :libvirt do |rsc|
+      rsc.memory = 2048
+      rsc.cpus = 2
+    end
+    #cfg.vm.provision "shell", inline: "yum -y install epel-release && yum -y install ansible"
+    #cfg.vm.provision "file", source: "hosts.yaml", destination: "hosts.yaml"
+    #cfg.vm.provision "shell", inline: "ansible-playbook hosts.yaml"
+  end
+end
