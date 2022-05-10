@@ -1,0 +1,56 @@
+---
+- name: NFS SERVER
+  hosts: localhost
+  gather_facts: no
+
+  tasks:
+    - name: DIR creation
+      file:
+        path: /home/vagrant/shared
+        state: directory
+        mode: 0777
+
+    - name: installation nfs server
+      become: yes
+      yum:
+        name: nfs-utils
+        state: present
+
+    - name: configuring /etc/exports
+      become: yes
+      lineinfile:
+        path: /etc/exports
+        line: /home/vagrant/shared 172.16.1.0/24(rw,sync)
+
+    - name: start nfs server
+      become: yes
+      service:
+        name: nfs-server
+        state: restarted
+
+    - name: stop firewalld
+      become: yes
+      service:
+        name: firewalld
+        state: stopped
+        enabled: false
+
+- name: setup nfs client
+  hosts: all
+  gather_facts: yes
+
+  tasks:
+    - name: make nfs_client directory
+      file:
+        path: "{{ ansible_user_dir }}/remote"
+        state: directory
+
+    - name: mount
+      become: yes
+      mount:
+        path: "{{ ansible_user_dir}}remote"
+        src: 172.16.1.10:/home/vagrant/shared
+        fstype: nfs
+        opts: nfsvers=3
+        state: mounted
+

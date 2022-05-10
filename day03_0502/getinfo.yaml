@@ -1,0 +1,13 @@
+---
+- name: print distribution, pkg mgr
+  hosts: all
+  gather_facts: yes
+
+  tasks:
+    - name: debugging
+      debug:
+        msg:
+          - "호스트네임 : {{ ansible_hostname }}"
+          - "배포판: {{ ansible_distribution }}"
+          - "패키지 매니저 : {{ ansible_pkg_mgr }}"
+          - "사설 인터페이스 주소 : {{ ansible_eth1.ipv4.address }}"
