@@ -1,0 +1,21 @@
+---
+- name: docker installation on local server
+  hosts: localhost
+  become: yes
+  gather_facts: no
+
+  tasks:
+    - name: yum-utils install
+      yum:
+        name: yum-utils
+        state: present
+    - name: repository
+      shell: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+    - name: docker install
+      yum:
+        name: ['docker-ce', 'docker-ce-cli','containerd.io','docker-compose-plugin']
+    - name: start docker
+      service:
+        name: docker
+        state: started
+        enabled: true
