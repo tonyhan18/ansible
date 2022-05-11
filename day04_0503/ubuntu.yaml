@@ -1,0 +1,15 @@
+---
+- name: nginx install
+  apt:
+    name: nginx
+    state: present
+
+- name: start nginx
+  service:
+    name: nginx
+    state: started
+    enable: true
+
+- name: stop ufw
+  ufw:
+    state: disabled
