@@ -1,0 +1,16 @@
+---
+- name: firewalld stop
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: firewalld stop
+      service:
+        name: firewalld
+        state: stopped
+        enabled: false
+      when: ansible_distribution == 'CentOS'
+    - name: ufw stop
+      ufw:
+        state: disabled
+      when: ansible_distribution == 'Ubuntu'
